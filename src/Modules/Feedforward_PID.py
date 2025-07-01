@@ -33,10 +33,10 @@ class Feedforward_PID_Controller:
             float: 前馈模型计算出的在某电流下达到目标温度对应的流速
         """
 
-        lye_flow_cal = self.awe_model.Working_Optimization(current_density=current_density,
+        lye_flow_target, lye_temp_target = self.awe_model.Working_Optimization(current_density=current_density,
                                                            Pressure=1.6)
 
-        return lye_flow_cal
+        return lye_flow_target, lye_temp_target
 
 
     def lye_flow_update(self, current_density, Temperature):
@@ -51,7 +51,7 @@ class Feedforward_PID_Controller:
         Returns:
             float: 控制量，即碱液流速
         """
-        feedforward_lye_flow = self.feedforward_lye_flow_cal(current_density)
+        feedforward_lye_flow, lye_temp_target = self.feedforward_lye_flow_cal(current_density)
 
         # 比例项
         error = self.setpoint - Temperature
@@ -70,4 +70,4 @@ class Feedforward_PID_Controller:
 
         lye_flow_cal = feedforward_lye_flow + self.Kp * error + self.Ki * self.integral + self.Kd * derivative
         
-        return lye_flow_cal
+        return lye_flow_cal, lye_temp_target
